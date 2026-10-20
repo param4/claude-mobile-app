@@ -14,11 +14,14 @@ The Expo (iOS + Android) app of Claude Mobile. The server is the sibling repo `.
   - Pair, Projects (search, pinned, New chat picker)
   - Sessions (status/group/sort chips, search, live badges)
   - Chat: history and live merged by id, streaming draft, Stop, settings sheet with model/effort/mode, slash palette, approval and question cards
-  - New chat screen
+  - New chat screen: desktop presets, folder picker (`/folders`), Fast mode
+  - Composer: attachments (photos, camera, files, paste; images shrunk to 1568 px JPEG before upload), `@` file mentions
+  - Chat: images and files in messages, long-press actions (copy, edit, retry, fork, rewind), ⋯ menu (find in chat, fork, share as Markdown, Fast mode)
 - **Next:**
   - voice (phase 3)
   - polish, app icon, standalone builds (phase 4)
   - a working Settings button on Projects
+  - rename / pin / archive (server side blocked, see the server's CLAUDE.md)
 
 ## Gotchas
 - `REACT_NATIVE_PACKAGER_HOSTNAME` must be in `.env.local`; Expo refuses it in `.env`.

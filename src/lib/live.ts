@@ -14,6 +14,7 @@ import type {
 import { useConnection } from './connection';
 
 type ToolResult = NonNullable<Extract<ChatItem, { kind: 'tool' }>['result']>;
+export type RewindPreview = Omit<Extract<ServerMessage, { type: 'rewind_preview' }>, 'type' | 'sessionId'>;
 
 export type LiveChat = {
   state: LiveState;
@@ -26,6 +27,7 @@ export type LiveChat = {
   models: ModelOption[];
   error?: string;
   turnsEnded: number;
+  rewindPreviews: Record<string, RewindPreview>;
 };
 
 const emptyChat = (): LiveChat => ({
@@ -37,6 +39,7 @@ const emptyChat = (): LiveChat => ({
   commands: [],
   models: [],
   turnsEnded: 0,
+  rewindPreviews: {},
 });
 
 type LiveStore = {
@@ -138,6 +141,10 @@ function apply(m: ServerMessage) {
       return update(id, (c) => ({ items: [...c.items, { kind: 'assistant', id: `notice:${Date.now()}`, text: `_${m.text}_` }] }));
     case 'error':
       return update(id, () => ({ error: m.message }));
+    case 'rewind_preview': {
+      const { type: _t, sessionId: _s, ...preview } = m;
+      return update(id, (c) => ({ rewindPreviews: { ...c.rewindPreviews, [m.messageId]: preview } }));
+    }
   }
 }
 

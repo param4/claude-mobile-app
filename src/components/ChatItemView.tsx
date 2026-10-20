@@ -1,8 +1,10 @@
 import { Fragment, memo, useState } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Image, Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useMarkdown } from 'react-native-marked';
 import type { ChatItem } from '@claude-mobile/protocol';
 import { Icon } from './Icon';
+import { imageSource } from '@/lib/api';
 import { fonts, useTheme, type Theme } from '@/theme';
 
 type ToolResult = NonNullable<Extract<ChatItem, { kind: 'tool' }>['result']>;
@@ -97,28 +99,97 @@ function Thinking({ text }: { text: string }) {
   );
 }
 
-export const ChatItemView = memo(function ChatItemView({ item, result }: { item: ChatItem; result?: ToolResult }) {
+function UserMessage({ item, onLongPress }: { item: Extract<ChatItem, { kind: 'user' }>; onLongPress?: () => void }) {
   const t = useTheme();
-  switch (item.kind) {
-    case 'user':
-      return (
-        <View style={[styles.bubble, { backgroundColor: t.bubble }]}>
-          <Text selectable style={{ fontSize: 16, lineHeight: 23, color: t.text }}>
-            {item.text}
-          </Text>
+  const [viewing, setViewing] = useState<string>();
+  return (
+    <View style={{ alignSelf: 'flex-end', maxWidth: '85%', alignItems: 'flex-end', gap: 6 }}>
+      {item.images?.length ? (
+        <View style={styles.images}>
+          {item.images.map((img) => (
+            <Pressable key={img.url} accessibilityRole="imagebutton" accessibilityLabel="Open image" onPress={() => setViewing(img.url)} onLongPress={onLongPress}>
+              <Image source={imageSource(img.url)} style={[styles.image, { backgroundColor: t.fill }]} resizeMode="cover" />
+            </Pressable>
+          ))}
         </View>
-      );
-    case 'assistant':
-      return <Markdown value={item.text} />;
-    case 'thinking':
-      return <Thinking text={item.text} />;
-    case 'tool':
-      return <ToolCard item={item} result={result} />;
-  }
+      ) : null}
+      {item.files?.length ? (
+        <View style={styles.images}>
+          {item.files.map((f) => (
+            <View key={f} style={[styles.file, { backgroundColor: t.code }]}>
+              <Icon name="file" size={16} color={t.text2} />
+              <Text style={{ fontSize: 13, color: t.text, maxWidth: 180 }} numberOfLines={1}>
+                {f}
+              </Text>
+            </View>
+          ))}
+        </View>
+      ) : null}
+      {item.text ? (
+        <Pressable onLongPress={onLongPress} delayLongPress={350} style={[styles.bubble, { backgroundColor: t.bubble }]}>
+          <Text style={{ fontSize: 16, lineHeight: 23, color: t.text }}>{item.text}</Text>
+        </Pressable>
+      ) : null}
+      {viewing ? <ImageViewer url={viewing} onClose={() => setViewing(undefined)} /> : null}
+    </View>
+  );
+}
+
+function ImageViewer({ url, onClose }: { url: string; onClose: () => void }) {
+  const insets = useSafeAreaInsets();
+  return (
+    <Modal visible transparent animationType="fade" onRequestClose={onClose}>
+      <View style={{ flex: 1, backgroundColor: '#000' }}>
+        <ScrollView maximumZoomScale={4} minimumZoomScale={1} centerContent contentContainerStyle={{ flexGrow: 1, justifyContent: 'center' }}>
+          <Image source={imageSource(url)} style={{ width: '100%', aspectRatio: 0.75 }} resizeMode="contain" accessibilityLabel="Attached image" />
+        </ScrollView>
+        <Pressable accessibilityRole="button" accessibilityLabel="Close image" onPress={onClose} style={[styles.closeImage, { top: insets.top + 8 }]}>
+          <Icon name="close" size={22} color="#FFFFFF" />
+        </Pressable>
+      </View>
+    </Modal>
+  );
+}
+
+export const ChatItemView = memo(function ChatItemView({
+  item,
+  result,
+  onLongPress,
+  highlighted,
+}: {
+  item: ChatItem;
+  result?: ToolResult;
+  onLongPress?: (item: ChatItem) => void;
+  highlighted?: boolean;
+}) {
+  const t = useTheme();
+  const press = onLongPress ? () => onLongPress(item) : undefined;
+  const view = (() => {
+    switch (item.kind) {
+      case 'user':
+        return <UserMessage item={item} onLongPress={press} />;
+      case 'assistant':
+        return (
+          <Pressable onLongPress={press} delayLongPress={350}>
+            <Markdown value={item.text} />
+          </Pressable>
+        );
+      case 'thinking':
+        return <Thinking text={item.text} />;
+      case 'tool':
+        return <ToolCard item={item} result={result} />;
+    }
+  })();
+  return highlighted ? <View style={[styles.highlight, { borderColor: t.clay, backgroundColor: t.clayTint }]}>{view}</View> : view;
 });
 
 const styles = StyleSheet.create({
-  bubble: { alignSelf: 'flex-end', maxWidth: '85%', paddingHorizontal: 14, paddingVertical: 10, borderRadius: 18 },
+  bubble: { paddingHorizontal: 14, paddingVertical: 10, borderRadius: 18 },
+  images: { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'flex-end', gap: 6 },
+  image: { width: 120, height: 120, borderRadius: 14 },
+  file: { flexDirection: 'row', alignItems: 'center', gap: 8, paddingHorizontal: 12, height: 40, borderRadius: 12 },
+  closeImage: { position: 'absolute', right: 12, width: 44, height: 44, borderRadius: 22, backgroundColor: 'rgba(255,255,255,0.15)', alignItems: 'center', justifyContent: 'center' },
+  highlight: { borderWidth: 1.5, borderRadius: 16, padding: 8, margin: -9 },
   card: { borderWidth: 0.5, borderRadius: 14, overflow: 'hidden' },
   toolRow: { flexDirection: 'row', alignItems: 'center', gap: 10, minHeight: 44, paddingHorizontal: 12 },
   mono: { fontFamily: fonts.mono, fontSize: 12, lineHeight: 18 },

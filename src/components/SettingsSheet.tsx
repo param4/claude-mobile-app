@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Modal, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { Effort, LiveSettings, ModelOption, PermissionMode } from '@claude-mobile/protocol';
 import { modeLabels } from './Composer';
@@ -92,6 +92,21 @@ export function SettingsSheet({
             </View>
           </Section>
 
+          <Section title="Speed">
+            <View style={[styles.list, styles.fastRow, { borderColor: t.line2 }]}>
+              <View style={{ flex: 1 }}>
+                <Text style={{ fontSize: 16, color: t.text }}>Fast mode</Text>
+                <Text style={{ fontSize: 13, color: t.text3 }}>Quicker replies; uses your plan faster</Text>
+              </View>
+              <Switch
+                accessibilityLabel="Fast mode"
+                value={!!settings?.fastMode}
+                onValueChange={(fastMode) => onChange({ fastMode })}
+                trackColor={{ true: t.clay }}
+              />
+            </View>
+          </Section>
+
           <Section title="Permissions">
             <View style={[styles.list, { borderColor: t.line2 }]}>
               {modes.map((m) => (
@@ -147,6 +162,7 @@ const styles = StyleSheet.create({
   done: { height: 44, justifyContent: 'center', paddingHorizontal: 4 },
   list: { borderWidth: 0.5, borderRadius: 14, overflow: 'hidden' },
   row: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 52, paddingHorizontal: 14, paddingVertical: 6, borderBottomWidth: 0.5 },
+  fastRow: { flexDirection: 'row', alignItems: 'center', gap: 12, minHeight: 56, paddingHorizontal: 14, paddingVertical: 6 },
   more: { minHeight: 44, justifyContent: 'center', paddingHorizontal: 14 },
   segments: { flexDirection: 'row', gap: 2, padding: 3, borderRadius: 12 },
   segment: { flex: 1, height: 40, alignItems: 'center', justifyContent: 'center', borderRadius: 10 },

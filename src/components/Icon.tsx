@@ -64,6 +64,90 @@ const paths = {
       <Path d="M8 12h8" />
     </>
   ),
+  chevronUp: <Path d="M6 15l6-6 6 6" />,
+  image: (
+    <>
+      <Rect x="3" y="4" width="18" height="16" rx="3" />
+      <Circle cx="9" cy="10" r="2" />
+      <Path d="M21 16l-5-5-9 9" />
+    </>
+  ),
+  camera: (
+    <>
+      <Path d="M4 8h3l2-3h6l2 3h3v11H4z" />
+      <Circle cx="12" cy="13" r="3.5" />
+    </>
+  ),
+  file: (
+    <>
+      <Path d="M14 3H6v18h12V7z" />
+      <Path d="M14 3v4h4" />
+    </>
+  ),
+  clipboard: (
+    <>
+      <Rect x="6" y="4" width="12" height="17" rx="2" />
+      <Path d="M9 4V3h6v1" />
+      <Path d="M9 11h6" />
+      <Path d="M9 15h4" />
+    </>
+  ),
+  at: (
+    <>
+      <Circle cx="12" cy="12" r="3.5" />
+      <Path d="M15.5 12v1.5a2.5 2.5 0 0 0 5 0V12a8.5 8.5 0 1 0-3.4 6.8" />
+    </>
+  ),
+  copy: (
+    <>
+      <Rect x="8" y="8" width="12" height="12" rx="2" />
+      <Path d="M16 8V5a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h3" />
+    </>
+  ),
+  edit: <Path d="M4 20h4L19 9l-4-4L4 16z" />,
+  retry: (
+    <>
+      <Path d="M4 12a8 8 0 1 0 3-6.2" />
+      <Path d="M4 4v4h4" />
+    </>
+  ),
+  fork: (
+    <>
+      <Circle cx="6" cy="5" r="2" />
+      <Circle cx="18" cy="5" r="2" />
+      <Circle cx="12" cy="19" r="2" />
+      <Path d="M6 7v2a3 3 0 0 0 3 3h6a3 3 0 0 0 3-3V7" />
+      <Path d="M12 12v5" />
+    </>
+  ),
+  rewind: (
+    <>
+      <Path d="M11 7l-6 5 6 5z" />
+      <Path d="M19 7l-6 5 6 5z" />
+    </>
+  ),
+  share: (
+    <>
+      <Path d="M12 15V3" />
+      <Path d="M7 8l5-5 5 5" />
+      <Path d="M5 13v7h14v-7" />
+    </>
+  ),
+  more: (
+    <>
+      <Circle cx="5" cy="12" r="1" />
+      <Circle cx="12" cy="12" r="1" />
+      <Circle cx="19" cy="12" r="1" />
+    </>
+  ),
+  bolt: <Path d="M13 3L5 14h6l-1 7 8-11h-6z" />,
+  folderPlus: (
+    <>
+      <Path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+      <Path d="M12 11v5" />
+      <Path d="M9.5 13.5h5" />
+    </>
+  ),
   newChat: (
     <>
       <Path d="M12 20H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v7" />

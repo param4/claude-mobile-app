@@ -14,6 +14,7 @@ import { relativeTime, shortenHome } from '@/lib/format';
 import { useTheme } from '@/theme';
 
 type Sort = 'recent' | 'name';
+const CHOOSE_FOLDER = '__choose-folder';
 
 export default function ProjectsScreen() {
   const t = useTheme();
@@ -43,6 +44,7 @@ export default function ProjectsScreen() {
   const newChatOptions = [
     ...allProjects.map((p) => ({ value: p.key, label: p.name })),
     ...(allProjects.some((p) => p.key === 'no-folder') ? [] : [{ value: 'no-folder', label: 'No folder' }]),
+    { value: CHOOSE_FOLDER, label: 'Choose another folder…' },
   ];
 
   const chatHits: SessionSummary[] = needle.length > 1 ? (chats.data?.groups.flatMap((g) => g.sessions) ?? []) : [];
@@ -113,7 +115,9 @@ export default function ProjectsScreen() {
         value=""
         visible={picking}
         onSelect={(key) =>
-          router.push({ pathname: '/new', params: { project: key, name: newChatOptions.find((o) => o.value === key)?.label ?? '' } })
+          key === CHOOSE_FOLDER
+            ? router.push('/folders')
+            : router.push({ pathname: '/new', params: { project: key, name: newChatOptions.find((o) => o.value === key)?.label ?? '' } })
         }
         onClose={() => setPicking(false)}
       />
